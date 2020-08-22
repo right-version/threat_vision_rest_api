@@ -28,7 +28,7 @@ def pong():
 
 @app.route('/')
 def index():
-    return "Hello:)"
+    return "Hello!!:)"
 
 
 if __name__ == '__main__':
