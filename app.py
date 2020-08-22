@@ -33,15 +33,16 @@ def predict(test_loader: DataLoader) -> dict:
     """
     probs = dict()
 
-    criterion = torch.nn.MSELoss()
+    criterion = torch.nn.MSELoss(reduction="none")
+    _, batch = next(enumerate(test_loader))
     with torch.no_grad():
-        for i, batch in enumerate(test_loader):
 
             outputs = model(batch)
 
             test_loss = criterion(outputs, batch)
 
-            probs[str(i)] = str(test_loss.item())
+    test_loss = test_loss.mean(dim=1)
+    probs = [prob.item() for prob in test_loss]
     return probs
 
 
@@ -58,7 +59,8 @@ def pong():
     file = request.files['file']
     data = pd.read_csv(file)
     dataset_test = TrafficDataset(data)
-    test_loader = DataLoader(dataset_test, batch_size=1)
+    print(dataset_test[:,:].shape)
+    test_loader = DataLoader(dataset_test, batch_size=len(dataset_test))
 
     probs = predict(test_loader)
 
